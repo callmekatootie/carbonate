@@ -1,0 +1,7 @@
+---
+name: 'Carbonify'
+description: 'Display code as images, beautified.'
+runs:
+  using: 'node12'
+  main: 'index.js'
+...

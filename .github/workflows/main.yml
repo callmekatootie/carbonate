@@ -1,0 +1,12 @@
+on: [issue_comment]
+
+jobs:
+  carbonify:
+    runs-on: ubuntu-latest
+    name: A job to carbon-coat code snippets
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Carbon coat
+        uses: ./ # Uses an action in the root directory
+        id: carbon-coat
