@@ -6,6 +6,7 @@ const fs = require('fs')
 const { v4: uuidv4 } = require('uuid')
 const FormData = require('form-data')
 const path = require('path')
+const util = require('util')
 
 const IMAGE_FILE_EXT = '.png'
 const IMGUR_API_URL = 'https://api.imgur.com/3/image'
@@ -29,6 +30,8 @@ const CARBON_DEFAULT_SETTINGS = {
   exportSize: '1x',
   watermark: false
 }
+
+const unlink = util.promisify(fs.unlink)
 
 /**
  * Generates the image using Carbon's API
@@ -151,7 +154,7 @@ async function execute () {
   } finally {
     // Cleanup
     if (imageId) {
-      await fs.unlink(path.resolve(__dirname, `${imageId}${IMAGE_FILE_EXT}`))
+      await unlink(path.resolve(__dirname, `${imageId}${IMAGE_FILE_EXT}`))
     }
   }
 }
