@@ -19,6 +19,16 @@
   "homepage": "https://github.com/callmekatootie/carbonify#readme",
   "dependencies": {
     "@actions/core": "^1.2.4",
-    "@actions/github": "^4.0.0"
+    "@actions/github": "^4.0.0",
+    "axios": "^0.19.2",
+    "form-data": "^3.0.0",
+    "gfm-code-blocks": "^1.0.0",
+    "standard": "^14.3.4",
+    "uuid": "^8.3.0"
+  },
+  "standard": {
+    "ignore": [
+      "node_modules/"
+    ]
   }
 }

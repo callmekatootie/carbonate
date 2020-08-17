@@ -10,3 +10,6 @@ jobs:
       - name: Carbon coat
         uses: ./ # Uses an action in the root directory
         id: carbon-coat
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          imgur-client-id: ${{ secrets.IMGUR_CLIENT_ID }}

@@ -1,6 +1,14 @@
 ---
 name: 'Carbonify'
 description: 'Display code as images, beautified.'
+inputs:
+  github-token:
+    description: 'The GITHUB_TOKEN'
+    required: false
+    default: ${{ github.token }}
+  imgur-client-id:
+    description: 'The Imgur app client id'
+    required: true
 runs:
   using: 'node12'
   main: 'index.js'
