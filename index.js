@@ -97,20 +97,27 @@ function replaceCodeBlockWithImage (commentBody, imageUrl) {
   // TODO - Support more than one code block
   const codeblock = gcb(commentBody)[0]
 
-  return commentBody.replace(codeblock.block, `![](${imageUrl})`)
+  return commentBody.replace(codeblock.block, `\n<p align="center"><img src="${imageUrl}"/></p>\n`)
 }
 
-// /**
-//  * Updates the comment
-//  * @param {Object} comment Details about the comment
-//  */
-// async function updateComment (comment) {
-//   const githubToken = core.getInput('github-token')
+/**
+ * Updates the comment
+ * @param {Object} comment Details about the comment
+ */
+async function updateComment (comment) {
+  const githubToken = core.getInput('github-token')
 
-//   const octokit = github.getOctokit(githubToken)
+  const octokit = github.getOctokit(githubToken)
 
+  try {
+    await octokit.issues.updateComment(comment)
+  } catch (error) {
+    console.log('Error occurred updating the comment')
+    console.log(error)
 
-// }
+    throw error
+  }
+}
 
 /**
  * Main function
@@ -134,18 +141,18 @@ async function execute () {
 
     console.log('The imgur url', imageUrl)
 
-    const updatedComment = replaceCodeBlockWithImage(body)
+    const updatedComment = replaceCodeBlockWithImage(body, imageUrl)
 
     console.log('The updated comment is ', updatedComment)
 
-    // const commentDetails = {
-    //   owner: github.context.payload.repository.,
-    //   repo:,
-    //   comment_id:,
-    //   body:
-    // }
+    const commentDetails = {
+      owner: github.context.payload.repository.owner.login,
+      repo: github.context.payload.repository.name,
+      comment_id: github.context.payload.comment.id,
+      body: updatedComment
+    }
 
-    // await updateComment()
+    await updateComment(commentDetails)
 
     // TODO - Remove before publishing
     console.log('The event payload: ', JSON.stringify(github, null, 4))
