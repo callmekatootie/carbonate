@@ -7,43 +7,39 @@ const { v4: uuidv4 } = require('uuid')
 const FormData = require('form-data')
 const path = require('path')
 const util = require('util')
-
-const IMAGE_FILE_EXT = '.png'
-const IMGUR_API_URL = 'https://api.imgur.com/3/image'
-const CARBON_API_URL = 'https://carbonara.now.sh/api/cook'
-const CARBON_DEFAULT_SETTINGS = {
-  paddingVertical: '8px',
-  paddingHorizontal: '13px',
-  backgroundColor: 'rgba(171, 184, 195, 1)',
-  dropShadow: true,
-  dropShadowOffsetY: '20px',
-  dropShadowBlurRadius: '68px',
-  theme: 'one-dark',
-  windowTheme: 'none',
-  language: 'auto',
-  fontFamily: 'Hack',
-  fontSize: '14px',
-  lineHeight: '133%',
-  windowControls: true,
-  widthAdjustment: true,
-  lineNumbers: false,
-  exportSize: '1x',
-  watermark: false
-}
+const prettier = require('prettier')
+const {
+  IMAGE_FILE_EXT,
+  IMGUR_API_URL,
+  CARBON_API_URL,
+  CARBON_DEFAULT_SETTINGS
+} = require('./constants')
 
 const unlink = util.promisify(fs.unlink)
 
 /**
+ * Formats the code using prettier
+ * @param {String} code The code block to format
+ * @param {Object} options The Prettier options
+ * @param {String} parser The Prettier parser
+ */
+function formatCode (code, options, parser) {
+  return prettier.format(code, { ...options, parser })
+}
+
+/**
  * Generates the image using Carbon's API
  * @param {String} code The code to generate image for
+ * @param {Object} options The {Unofficial} Carbon API options
  */
-async function generateImage (code) {
+async function generateImage (code, options) {
   const uuid = uuidv4()
 
   try {
     const res = await Axios.post(CARBON_API_URL, {
       code,
-      ...CARBON_DEFAULT_SETTINGS
+      ...CARBON_DEFAULT_SETTINGS,
+      ...options
     }, {
       responseType: 'stream'
     })
@@ -124,6 +120,23 @@ async function updateComment (comment) {
  */
 async function execute () {
   let imageId
+  let code
+  const usePrettier = core.getInput('use-prettier') === 'true'
+  const prettierParser = core.getInput('prettier-parser')
+  let prettierOptions = {}
+  let carbonOptions = {}
+
+  try {
+    prettierOptions = JSON.parse(core.getInput('prettier-options'))
+  } catch (error) {
+    console.log('Prettier options is not a valid JSON string. Falling back to default')
+  }
+
+  try {
+    carbonOptions = JSON.parse(core.getInput('carbon-options'))
+  } catch (error) {
+    console.log('Carbon options is not a valid JSON string. Falling back to default')
+  }
 
   try {
     const { body } = github.context.payload.comment
@@ -135,7 +148,13 @@ async function execute () {
       return
     }
 
-    imageId = await generateImage(codeblocks[0].code)
+    if (usePrettier) {
+      code = formatCode(codeblocks[0].code, prettierOptions, prettierParser)
+    } else {
+      code = codeblocks[0].code
+    }
+
+    imageId = await generateImage(code, carbonOptions)
 
     const imageUrl = await uploadImage(imageId)
 
