@@ -44,10 +44,28 @@ async function generateImage (code, options) {
       responseType: 'stream'
     })
 
-    res.data.pipe(fs.createWriteStream(path.join(__dirname, `${uuid}${IMAGE_FILE_EXT}`)))
+    const writeStream = fs.createWriteStream(path.join(__dirname, `${uuid}${IMAGE_FILE_EXT}`))
 
-    // Return the file id
-    return uuid
+    return new Promise((resolve, reject) => {
+      let error
+
+      res.data.pipe(writeStream)
+
+      writeStream.on('error', (err) => {
+        error = err
+        console.log('Error occurred during carbonify')
+        console.log(error)
+        writeStream.close()
+        reject(error)
+      })
+
+      writeStream.on('close', () => {
+        if (!error) {
+          // Return the file id
+          resolve(uuid)
+        }
+      })
+    })
   } catch (error) {
     console.log('An error occurred when trying to generate image for the code')
     console.log(error)
@@ -172,12 +190,11 @@ async function execute () {
     }
 
     await updateComment(commentDetails)
-
-    // TODO - Remove before publishing
-    console.log('The event payload: ', JSON.stringify(github, null, 4))
   } catch (error) {
     core.setFailed(error.message)
   } finally {
+    // TODO - Remove before publishing
+    console.log('The event payload: ', JSON.stringify(github, null, 4))
     // Cleanup
     if (imageId) {
       await unlink(path.resolve(__dirname, `${imageId}${IMAGE_FILE_EXT}`))
