@@ -116,6 +116,8 @@ function replaceCodeBlockWithImage (commentBody, imageUrl) {
   // TODO - Support more than one code block
   const codeblock = gcb(commentBody)[0]
 
+  // ! DO NOT change the formatting for this constant's value
+  // ! Intentionally set this way for the markdown to be correct during render
   const replaceWith = `\n<p align="center"><img src="${imageUrl}"/></p>\n\n---\n\n<details><summary>View raw code</summary>
 <p>
 
@@ -190,11 +192,11 @@ async function execute () {
 
     const imageUrl = await uploadImage(imageId)
 
-    core.debug('The imgur url', imageUrl)
+    core.debug(`The imgur url is ${imageUrl}`)
 
     const updatedComment = replaceCodeBlockWithImage(body, imageUrl)
 
-    core.debug('The updated comment is ', updatedComment)
+    core.debug(`The updated comment is ${updateComment}`)
 
     const commentDetails = {
       owner: github.context.payload.repository.owner.login,
@@ -204,10 +206,14 @@ async function execute () {
     }
 
     await updateComment(commentDetails)
+
+    core.info('Task completed')
   } catch (error) {
     core.setFailed(error.message)
   } finally {
-    core.debug('The event payload: ', JSON.stringify(github, null, 4))
+    core.startGroup('View event payload')
+    core.debug(JSON.stringify(github, null, 4))
+    core.endGroup()
     // Cleanup
     if (imageId) {
       await unlink(path.resolve(__dirname, `${imageId}${IMAGE_FILE_EXT}`))
