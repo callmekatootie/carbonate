@@ -35,6 +35,8 @@ function formatCode (code, options, parser) {
 async function generateImage (code, options) {
   const uuid = uuidv4()
 
+  core.info('Generating image from the code...')
+
   try {
     const res = await Axios.post(CARBON_API_URL, {
       code,
@@ -53,8 +55,8 @@ async function generateImage (code, options) {
 
       writeStream.on('error', (err) => {
         error = err
-        console.log('Error occurred during carbonify')
-        console.log(error)
+        core.error('An error occurred downloading the generated image from Carbon')
+        core.debug(error)
         writeStream.close()
         reject(error)
       })
@@ -67,9 +69,10 @@ async function generateImage (code, options) {
       })
     })
   } catch (error) {
-    console.log('An error occurred when trying to generate image for the code')
-    console.log(error)
+    core.error('An error occurred when trying to generate image for the code')
+    core.debug(error)
 
+    // Throw the error to abort the operation
     throw error
   }
 }
@@ -84,6 +87,8 @@ async function uploadImage (imageId) {
   const form = new FormData()
   form.append('image', fs.createReadStream(path.join(__dirname, `${imageId}${IMAGE_FILE_EXT}`)))
 
+  core.info('Uploading image to imgur...')
+
   try {
     const res = await Axios.post(IMGUR_API_URL, form, {
       headers: {
@@ -94,8 +99,8 @@ async function uploadImage (imageId) {
 
     return res.data.data.link
   } catch (error) {
-    console.log('An error occurred when trying to upload image to imgur')
-    console.log(error)
+    core.error('An error occurred when trying to upload image to imgur')
+    core.debug(error)
 
     throw error
   }
@@ -111,7 +116,20 @@ function replaceCodeBlockWithImage (commentBody, imageUrl) {
   // TODO - Support more than one code block
   const codeblock = gcb(commentBody)[0]
 
-  return commentBody.replace(codeblock.block, `\n<p align="center"><img src="${imageUrl}"/></p>\n`)
+  const replaceWith = `
+    \n
+    <p align="center"><img src="${imageUrl}"/></p>
+    ---
+    <details>
+      <summary>View raw code</summary>
+      <br>
+      <pre>${codeblock.block}</pre>
+    </details>
+    ---
+    \n
+  `
+
+  return commentBody.replace(codeblock.block, replaceWith)
 }
 
 /**
@@ -123,11 +141,13 @@ async function updateComment (comment) {
 
   const octokit = github.getOctokit(githubToken)
 
+  core.info('Updating comment...')
+
   try {
     await octokit.issues.updateComment(comment)
   } catch (error) {
-    console.log('Error occurred updating the comment')
-    console.log(error)
+    core.error('Error occurred updating the comment')
+    core.debug(error)
 
     throw error
   }
@@ -147,22 +167,22 @@ async function execute () {
   try {
     prettierOptions = JSON.parse(core.getInput('prettier-options'))
   } catch (error) {
-    console.log('Prettier options is not a valid JSON string. Falling back to default')
+    core.info('Prettier options is not passed or not a valid JSON string. Falling back to default')
   }
 
   try {
     carbonOptions = JSON.parse(core.getInput('carbon-options'))
   } catch (error) {
-    console.log('Carbon options is not a valid JSON string. Falling back to default')
+    core.info('Carbon options is not passed or not a valid JSON string. Falling back to default')
   }
 
   try {
     const { body } = github.context.payload.comment
     const codeblocks = gcb(body)
 
-    // TODO - Support more than 1 code block
+    // TODO - Support more than one code block
     if (codeblocks.length !== 1) {
-      console.log('No code block found or more than one code block found. Unsupported scenario for now')
+      core.info('No code block found or more than one code block found. Unsupported scenario for now. Quitting.')
       return
     }
 
@@ -176,11 +196,11 @@ async function execute () {
 
     const imageUrl = await uploadImage(imageId)
 
-    console.log('The imgur url', imageUrl)
+    core.debug('The imgur url', imageUrl)
 
     const updatedComment = replaceCodeBlockWithImage(body, imageUrl)
 
-    console.log('The updated comment is ', updatedComment)
+    core.debug('The updated comment is ', updatedComment)
 
     const commentDetails = {
       owner: github.context.payload.repository.owner.login,
@@ -193,8 +213,7 @@ async function execute () {
   } catch (error) {
     core.setFailed(error.message)
   } finally {
-    // TODO - Remove before publishing
-    console.log('The event payload: ', JSON.stringify(github, null, 4))
+    core.debug('The event payload: ', JSON.stringify(github, null, 4))
     // Cleanup
     if (imageId) {
       await unlink(path.resolve(__dirname, `${imageId}${IMAGE_FILE_EXT}`))
