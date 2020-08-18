@@ -13,3 +13,4 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           imgur-client-id: ${{ secrets.IMGUR_CLIENT_ID }}
+          use-prettier: 'false'
