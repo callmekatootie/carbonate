@@ -116,7 +116,12 @@ function replaceCodeBlockWithImage (commentBody, imageUrl) {
   // TODO - Support more than one code block
   const codeblock = gcb(commentBody)[0]
 
-  const replaceWith = `\n<p align="center"><img src="${imageUrl}"/></p>\n\n---\n\n<details><summary>View raw code</summary><p><br><br>${codeblock.block}<br><br></p></details>\n\n---\n\n`
+  const replaceWith = `\n<p align="center"><img src="${imageUrl}"/></p>\n\n---\n\n<details><summary>View raw code</summary>
+<p>
+
+${codeblock.block}
+
+</p></details>\n\n---\n\n`
 
   return commentBody.replace(codeblock.block, replaceWith)
 }
