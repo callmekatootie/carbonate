@@ -16,6 +16,11 @@ Jazz up the code blocks in your issues. Generate beautiful images for them to ma
 - Inserts the image at the code block
 - Retains the original code block as a collapsed detail
 - Allows formatting the code using Prettier and controlling the styling of the images generated
+- Supported events:
+  - issues
+    - opened
+  - issue_comment
+    - created
 
 ## Not Yet Supported
 

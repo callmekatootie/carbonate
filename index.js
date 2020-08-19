@@ -150,11 +150,33 @@ async function updateComment (comment) {
 }
 
 /**
+ * Updates the issue
+ * @param {Object} issue Details about the issue
+ */
+async function updateIssue (issue) {
+  const githubToken = core.getInput('github-token')
+
+  const octokit = github.getOctokit(githubToken)
+
+  core.info('Updating issue...')
+
+  try {
+    await octokit.issues.update(issue)
+  } catch (error) {
+    core.error('Error occurred updating the issue')
+    core.debug(error)
+
+    throw error
+  }
+}
+
+/**
  * Main function
  */
 async function execute () {
   let imageId
   let code
+  let body
   const usePrettier = core.getInput('use-prettier') === 'true'
   const prettierParser = core.getInput('prettier-parser')
   let prettierOptions = {}
@@ -188,7 +210,12 @@ async function execute () {
       return
     }
 
-    const { body } = payload.comment
+    if (eventName === 'issues') {
+      body = payload.issue.body
+    } else {
+      body = payload.comment.body
+    }
+
     const codeblocks = gcb(body)
 
     // TODO - Support more than one code block
@@ -213,14 +240,21 @@ async function execute () {
 
     core.debug(`The updated comment is ${updateComment}`)
 
-    const commentDetails = {
+    const updates = {
       owner: payload.repository.owner.login,
       repo: payload.repository.name,
-      comment_id: payload.comment.id,
       body: updatedComment
     }
 
-    await updateComment(commentDetails)
+    if (eventName === 'issues') {
+      updates.issue_number = payload.issue.number
+
+      await updateIssue(updates)
+    } else {
+      updates.comment_id = payload.comment.id
+
+      await updateComment(updates)
+    }
 
     core.info('Task completed')
   } catch (error) {
