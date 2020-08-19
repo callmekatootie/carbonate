@@ -1,22 +1,22 @@
 {
-  "name": "carbonify",
+  "name": "carbonate",
   "version": "1.0.0",
-  "description": "",
+  "description": "Github action that generates beautiful images for code blocks present in issues",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "standard index.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/callmekatootie/carbonify.git"
+    "url": "git+https://github.com/callmekatootie/carbonate.git"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/callmekatootie/carbonify/issues"
+    "url": "https://github.com/callmekatootie/carbonate/issues"
   },
-  "homepage": "https://github.com/callmekatootie/carbonify#readme",
+  "homepage": "https://github.com/callmekatootie/carbonate#readme",
   "dependencies": {
     "@actions/core": "^1.2.4",
     "@actions/github": "^4.0.0",
@@ -24,12 +24,9 @@
     "form-data": "^3.0.0",
     "gfm-code-blocks": "^1.0.0",
     "prettier": "^2.0.5",
-    "standard": "^14.3.4",
     "uuid": "^8.3.0"
   },
-  "standard": {
-    "ignore": [
-      "node_modules/"
-    ]
+  "devDependencies": {
+    "standard": "^14.3.4"
   }
 }

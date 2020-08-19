@@ -173,7 +173,22 @@ async function execute () {
   }
 
   try {
-    const { body } = github.context.payload.comment
+    const { eventName, payload } = github.context
+
+    if (eventName !== 'issues' && eventName !== 'issue_comment') {
+      core.info(`Unsupported event ${eventName}`)
+
+      return
+    }
+
+    if ((eventName === 'issues' && payload.action !== 'opened') ||
+      (eventName === 'issue_comment' && payload.action !== 'created')) {
+      core.info(`Unsupported type ${payload.action} for event ${eventName}`)
+
+      return
+    }
+
+    const { body } = payload.comment
     const codeblocks = gcb(body)
 
     // TODO - Support more than one code block
@@ -199,9 +214,9 @@ async function execute () {
     core.debug(`The updated comment is ${updateComment}`)
 
     const commentDetails = {
-      owner: github.context.payload.repository.owner.login,
-      repo: github.context.payload.repository.name,
-      comment_id: github.context.payload.comment.id,
+      owner: payload.repository.owner.login,
+      repo: payload.repository.name,
+      comment_id: payload.comment.id,
       body: updatedComment
     }
 

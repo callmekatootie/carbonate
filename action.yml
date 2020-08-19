@@ -1,29 +1,29 @@
 ---
-name: 'Carbonify'
-description: 'Display code as images, beautified.'
+name: 'Carbonate'
+description: 'Generate beautiful images for code blocks present in issues'
 inputs:
   github-token:
     description: 'The GITHUB_TOKEN. Will read off the environment variable by default'
     required: false
     default: ${{ github.token }}
   imgur-client-id:
-    description: 'The Imgur app client id'
+    description: 'All images are hosted on Imgur. Thus, provide your Imgur app client id'
     required: true
   use-prettier:
-    description: 'Should the code block be formatted using prettier? Pass String `true` or `false`. Default is `true`'
+    description: 'Should the code block be formatted using prettier? Pass String `true` or String `false`. Default is `true`'
     required: false
     default: 'true'
   prettier-parser:
-    description: 'Only read if `use-prettier` is set to `true`. This is the parser to use with Prettier. Default value is babel'
+    description: 'This is read only if `use-prettier` is set to `true`. This is the parser to use with Prettier. Default value is babel'
     required: false
     default: 'babel'
   prettier-options:
-    description: 'Only read if `use-prettier` is set to `true`. This is the Prettier options object, as a JSON string. Default values are the ones defined by Prettier itself. Check out their documentation'
+    description: 'This is read only if `use-prettier` is set to `true`. This is the Prettier options object, as a JSON string. Default values are the ones defined by Prettier itself. Check out their documentation'
     required: false
   carbon-options:
-    description: 'The Carbon options object, as a JSON string. See `https://github.com/petersolopov/carbonara#post-apicook` for a list of supported options. Ignores the `code` property though. For default values, please check out the source code of this action'
+    description: 'The Carbon options object, as a JSON string. See `https://github.com/petersolopov/carbonara#post-apicook` for a list of supported options. Ignores the `code` property though. For default values, please check out the constants.js file in the source code of this action'
     required: false
 runs:
   using: 'node12'
-  main: 'index.js'
+  main: 'dist/index.js'
 ...
