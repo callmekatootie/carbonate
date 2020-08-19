@@ -12,20 +12,32 @@ Jazz up the code blocks in your issues. Generate beautiful images for them to ma
 
 ## Features
 
-- Extracts the code block for the issue description / comment and generates images for them
-- Inserts the image at the code block
-- Retains the original code block as a collapsed detail
-- Allows formatting the code using Prettier and controlling the styling of the images generated
-- Supported events:
-  - issues
-    - opened
-  - issue_comment
-    - created
+The workflow of this action is as follows:
 
-## Not Yet Supported
+- It extracts the code block for the issue description / comment and generates images for them
+- It then inserts the image at the code block
+- It also retains the original code block as a collapsed detail in the same issue / comment body
+
+Additionally, it
+
+- Allows formatting the code using Prettier and controlling the styling of the images generated
+- Supports the following events:
+  - issue_comment:
+    - types: created
+  - issues:
+    - types: opened
+
+## Not supported (yet)
 
 - Generating images from multiple code blocks in the same issue description / comment
 - Generating images after the issue description / comment has been edited
+
+## Advantages of code images over code blocks
+
+- Easy to view and understand the image of the code v/s the code block text when using a mobile device. Why? Easier to scroll images v/s text.
+- Members will no longer have to rely on the issue reporters and commenters to format their code blocks correctly. Using the in built formatter, the code is always structured properly
+- Maintainers can style the code blocks to suit their project's language and guidelines and not put the onus of this on the issue reporter / commenter
+- [Carbon]((https://github.com/carbon-app/carbon)). Oh wow Carbon! It generates really beautiful images of code and it is aesthetically better to look at v/s plain code text
 
 ## Pre-requisites
 
