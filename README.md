@@ -4,11 +4,11 @@ Jazz up the code blocks in your issues. Generate beautiful images for them to ma
 
 **BEFORE**
 
-![]()
+![](https://i.imgur.com/FzLtUjP.png)
 
 **AFTER**
 
-![]()
+![](https://i.imgur.com/B29aF97.png)
 
 ## Features
 
