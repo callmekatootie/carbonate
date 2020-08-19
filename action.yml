@@ -26,4 +26,7 @@ inputs:
 runs:
   using: 'node12'
   main: 'index.js'
+branding:
+  icon: 'code'
+  color: 'blue'
 ...
