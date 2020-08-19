@@ -36,6 +36,8 @@ Jazz up the code blocks in your issues. Generate beautiful images for them to ma
     imgur-client-id: ${{ secrets.IMGUR_CLIENT_ID }}
 ```
 
+More inputs are available. See below.
+
 ### Inputs
 
 #### github-token
