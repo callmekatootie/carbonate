@@ -10,6 +10,8 @@ Jazz up the code blocks in your issues. Generate beautiful images for them to ma
 
 ![](https://i.imgur.com/B29aF97.png)
 
+> First appeared at: https://stackoverflow.com/a/61269447/2104976
+
 ## Features
 
 The workflow of this action is as follows:
@@ -46,11 +48,22 @@ Additionally, it
 ## Usage
 
 ```yaml
-- name: Generate beautiful images for code blocks present in issues
-  uses: callmekatootie/carbonate@v1
-  with:
-    github-token: ${{ secrets.GITHUB_TOKEN }}
-    imgur-client-id: ${{ secrets.IMGUR_CLIENT_ID }}
+on:
+  issue_comment:
+    types: [created]
+  issues:
+    types: [opened]
+
+jobs:
+  carbonate:
+    runs-on: ubuntu-latest
+    name: Generate beautiful images for code blocks present in issues
+    steps:
+      - name: Generate beautiful images for code blocks present in issues
+        uses: callmekatootie/carbonate@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          imgur-client-id: ${{ secrets.IMGUR_CLIENT_ID }}
 ```
 
 More inputs are available. See below.
