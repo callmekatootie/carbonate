@@ -197,11 +197,16 @@ async function execute () {
   try {
     const { eventName, payload } = github.context
 
+    core.debug(`Event name: ${eventName}`)
+    core.debug(`Payload action: ${payload.action}`)
+
     if (eventName !== 'issues' && eventName !== 'issue_comment') {
       core.info(`Unsupported event ${eventName}`)
 
       return
     }
+
+    core.debug('Is a supported event')
 
     if ((eventName === 'issues' && payload.action !== 'opened') ||
       (eventName === 'issue_comment' && payload.action !== 'created')) {
@@ -210,11 +215,15 @@ async function execute () {
       return
     }
 
+    core.debug('Is a supported type')
+
     if (eventName === 'issues') {
       body = payload.issue.body
     } else {
       body = payload.comment.body
     }
+
+    core.debug(`Body is ${body}`)
 
     const codeblocks = gcb(body)
 
@@ -229,6 +238,8 @@ async function execute () {
     } else {
       code = codeblocks[0].code
     }
+
+    core.debug(`Extracted code block is ${code}`)
 
     imageId = await generateImage(code, carbonOptions)
 
