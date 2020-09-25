@@ -1,6 +1,6 @@
 {
   "name": "carbonate",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Github action that generates beautiful images for code blocks present in issues",
   "main": "index.js",
   "scripts": {
