@@ -225,13 +225,19 @@ async function execute () {
 
     core.debug(`Body is ${body}`)
 
+    core.debug('Before extracting code blocks')
+
     const codeblocks = gcb(body)
+
+    core.debug('After extracting code blocks')
 
     // TODO - Support more than one code block
     if (codeblocks.length !== 1) {
       core.info('No code block found or more than one code block found. Unsupported scenario for now. Quitting.')
       return
     }
+
+    core.debug(`Prettier: ${prettier}`)
 
     if (usePrettier) {
       code = formatCode(codeblocks[0].code, prettierOptions, prettierParser)
