@@ -24,7 +24,15 @@ const unlink = util.promisify(fs.unlink)
  * @param {String} parser The Prettier parser
  */
 function formatCode (code, options, parser) {
-  return prettier.format(code, { ...options, parser })
+  try {
+    return prettier.format(code, { ...options, parser })
+  } catch (error) {
+    core.debug('An error occurred when using prettier')
+    core.debug(error)
+
+    // Return unformatted code
+    return code
+  }
 }
 
 /**
@@ -237,7 +245,7 @@ async function execute () {
       return
     }
 
-    core.debug(`Prettier: ${prettier}`)
+    core.debug(`Is prettier active: ${usePrettier}`)
 
     if (usePrettier) {
       code = formatCode(codeblocks[0].code, prettierOptions, prettierParser)
