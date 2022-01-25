@@ -2,7 +2,7 @@ const IMAGE_FILE_EXT = '.png'
 
 const IMGUR_API_URL = 'https://api.imgur.com/3/image'
 
-const CARBON_API_URL = 'https://carbonara.now.sh/api/cook'
+const CARBON_API_URL = 'https://carbonara-42.herokuapp.com/api/cook'
 
 const CARBON_DEFAULT_SETTINGS = {
   paddingVertical: '56px',
