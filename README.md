@@ -60,7 +60,7 @@ jobs:
     name: Generate beautiful images for code blocks present in issues
     steps:
       - name: Generate beautiful images for code blocks present in issues
-        uses: callmekatootie/carbonate@v1
+        uses: callmekatootie/carbonate@v1.0.2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           imgur-client-id: ${{ secrets.IMGUR_CLIENT_ID }}
